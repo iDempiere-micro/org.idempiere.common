@@ -19,7 +19,7 @@ package org.idempiere.common.db;
 import org.idempiere.common.util.CLogger;
 import org.idempiere.common.util.Ini;
 import org.idempiere.icommon.db.AdempiereDatabase;
-import org.idempiere.icommon.db.ICConnection;
+import software.hsharp.api.icommon.ICConnection;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
