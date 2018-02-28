@@ -1,0 +1,7 @@
+dependencies {
+    // https://mvnrepository.com/artifact/org.osgi/org.osgi.util.tracker
+    compile group: 'org.osgi', name: 'org.osgi.util.tracker', version: '1.5.1'    
+
+    compile project(':org.idempiere.icommon')
+    compile files('../org.idempiere.icommon/bin')    
+}
