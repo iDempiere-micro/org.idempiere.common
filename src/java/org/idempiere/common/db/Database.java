@@ -21,6 +21,9 @@ import org.idempiere.common.base.ServiceQuery;
 import org.idempiere.common.util.CLogger;
 import org.idempiere.icommon.db.AdempiereDatabase;
 
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -31,7 +34,8 @@ import java.util.logging.Level;
  *  @author     Jorg Janke
  *  @version    $Id: Database.java,v 1.3 2006/07/30 00:55:13 jjanke Exp $
  */
-public abstract class Database
+@Component
+public class Database
 {
 	/**	Logger							*/
 	private static CLogger			log = CLogger.getCLogger (Database.class);
@@ -53,11 +57,17 @@ public abstract class Database
 	public static final int         DB_POSTGRESQL_DEFAULT_PORT = 5432;
 	
 	protected static Database instance = null;
-	protected abstract AdempiereDatabase alsoGetDatabase (String type);
 
-	protected Database() {
+	public Database() {
 		instance = this;
 	}
+
+    private AdempiereDatabase databaseService = null;
+
+    @Reference
+    public void setDatabase(AdempiereDatabase databaseService) {
+        this.databaseService = databaseService;
+    }	
 
 	/**
 	 *  Get Database by database Id.
@@ -65,18 +75,7 @@ public abstract class Database
 	 */
 	private AdempiereDatabase doGetDatabase (String type)
 	{
-		ServiceQuery query = new ServiceQuery();
-		query.put("id", type);
-		AdempiereDatabase db = null;
-		try {
-			db = Service.locator().locate(AdempiereDatabase.class, query).getService();
-		} catch (Exception ex ) {
-			log.log(Level.WARNING, "getDatabase failed", ex);			
-		}
-		System.out.println( "doGetDatabase db = " + db );
-		db = alsoGetDatabase(type);
-		System.out.println( "alsoGetDatabase db = " + db );
-		return db;
+		return databaseService;
 	}
 	
 
