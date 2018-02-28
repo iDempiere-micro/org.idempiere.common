@@ -1,1 +1,1 @@
-# org.idempiere.common
+# iDempiere Core Commons (org.idempiere.common)
