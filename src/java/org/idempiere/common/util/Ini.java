@@ -49,7 +49,7 @@ import java.util.logging.Level;
  * 			<li>FR [ 1658127 ] Select charset encoding on import
  * 			<li>FR [ 2406123 ] Ini.getIni().saveProperties fails if target directory does not exist
  */
-public abstract class Ini implements Serializable
+public class Ini implements Serializable
 {
 	/**
 	 * 
@@ -59,7 +59,9 @@ public abstract class Ini implements Serializable
 	/**	Logger			*/
 	private  CLogger log = CLogger.getCLogger(Ini.class);
 
-	public abstract String getBasePropertyFileName();
+	public String getBasePropertyFileName() {
+		return "idempiere.properties";
+	}
 
 	/** Apps User ID		*/
 	public  final String	P_UID = 			"ApplicationUserID";
@@ -852,14 +854,12 @@ public abstract class Ini implements Serializable
 
     private static Ini instance;
     
-    protected Ini(){
+    public Ini(){
 		instance = this;
 	}
 
     public static Ini getIni(){
-        if(instance == null){
-            throw new IllegalArgumentException( "You have to subclass Ini" );
-        }
+		if (instance==null) new Ini();
         return instance;
     }
 }	//	Ini
