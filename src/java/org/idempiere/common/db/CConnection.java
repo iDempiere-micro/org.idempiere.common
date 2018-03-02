@@ -184,6 +184,9 @@ public class CConnection implements Serializable, Cloneable, ICConnection
 	/** Firewall port       */
 	private int 		m_fw_port = 0;
 
+	/** Connection uses SSL    */
+	private boolean 	m_ssl = false;
+
 	/** DB User name        */
 	private String 		m_db_uid = "idempiere";
 	/** DB User password    */
@@ -523,6 +526,32 @@ public class CConnection implements Serializable, Cloneable, ICConnection
 	}
 
 	/**
+	 * Method setSsl
+	 * @param viaSsl boolean
+	 */
+	public void setSsl (boolean viaSsl)
+	{
+		m_ssl = viaSsl;
+		m_okDB = false;
+	}
+
+    /**
+     * Method setSsl
+     * @param viaSslString String
+     */
+    public void setSsl (String viaSslString)
+    {
+        try
+        {
+            setSsl (Boolean.valueOf (viaSslString).booleanValue ());
+        }
+        catch (Exception e)
+        {
+            log.severe(e.toString ());
+        }
+    }
+
+	/**
 	 * Method setViaFirewall
 	 * @param viaFirewallString String
 	 */
@@ -662,6 +691,7 @@ public class CConnection implements Serializable, Cloneable, ICConnection
 		{
 			setBequeath (false);
 			setViaFirewall (false);
+			setSsl(false);
 		}
 
         // begin vpj-cd e-evolution 09 ene 2006
@@ -914,6 +944,7 @@ public class CConnection implements Serializable, Cloneable, ICConnection
 		  .append (",DBname=").append (escape(m_db_name))
 		  .append (",BQ=").append (m_bequeath)
 		  .append (",FW=").append (m_firewall)
+          .append (",SSL=").append (m_ssl)
 		  .append (",FWhost=").append (escape(m_fw_host))
 		  .append (",FWport=").append (m_fw_port)
 		  .append (",UID=").append (escape(m_db_uid))
@@ -980,6 +1011,10 @@ public class CConnection implements Serializable, Cloneable, ICConnection
 				{
 					setViaFirewall(value);
 				}
+                else if ("SSL".equalsIgnoreCase(key))
+                {
+                    setSsl(value);
+                }
 				else if ("FWhost".equalsIgnoreCase(key))
 				{
 					setFwHost(value);
@@ -1337,5 +1372,10 @@ public class CConnection implements Serializable, Cloneable, ICConnection
 		info[1] = m_info[1];
 		c.m_info = info;
 		return c;
+	}
+
+	@Override
+	public boolean getSsl() {
+		return m_ssl;
 	}
 }	//  CConnection
