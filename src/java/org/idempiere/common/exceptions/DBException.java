@@ -12,7 +12,7 @@
  * 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.                     *
  * For the text or an alternative of this public license, you may reach us    *
  * ComPiere, Inc., 2620 Augustine Dr. #245, Santa Clara, CA 95054, USA        *
- * or via info@idempiere.org or http://www.idempiere.org/license.html           *
+ * or via info@compiere.org or http://www.idempiere.org/license.html           *
  *****************************************************************************/
 package org.idempiere.common.exceptions;
 
@@ -40,7 +40,7 @@ public class DBException extends AdempiereException
 	public static final String DELETE_ERROR_DEPENDENT_MSG = "DeleteErrorDependent";
 	public static final String SAVE_ERROR_NOT_UNIQUE_MSG = "SaveErrorNotUnique";
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 4264201718343118625L;
 	private String m_sql = null;
@@ -181,6 +181,8 @@ public class DBException extends AdempiereException
      * @param e exception
      */
     public static boolean isInvalidIdentifierError(Exception e) {
+    	if (DB.isPostgreSQL())
+    		return isSQLState(e, "42P01");
     	return isErrorCode(e, 904);
     }
 

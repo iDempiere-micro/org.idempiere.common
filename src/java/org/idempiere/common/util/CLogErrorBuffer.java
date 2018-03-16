@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
 
+
 /**
  *	Client Error Buffer
  *
@@ -37,11 +38,10 @@ import java.util.logging.LogRecord;
  */
 public class CLogErrorBuffer extends Handler
 {
-	private static final String ISSUE_ERROR_KEY = "org.idempiere.common.util.CLogErrorBuffer.issueError";
-	private static final String HISTORY_KEY = "org.idempiere.common.util.CLogErrorBuffer.history";
-	private static final String ERRORS_KEY = "org.idempiere.common.util.CLogErrorBuffer.errors";
-	private static final String LOGS_KEY = "org.idempiere.common.util.CLogErrorBuffer.logs";
-
+	private static final String ISSUE_ERROR_KEY = "org.compiere.util.CLogErrorBuffer.issueError";
+	private static final String HISTORY_KEY = "org.compiere.util.CLogErrorBuffer.history";
+	private static final String ERRORS_KEY = "org.compiere.util.CLogErrorBuffer.errors";
+	private static final String LOGS_KEY = "org.compiere.util.CLogErrorBuffer.logs";
 
 	/**************************************************************************
 	 * 	Constructor
@@ -190,6 +190,7 @@ public class CLogErrorBuffer extends Handler
 				if (methodName == null)
 					methodName = "";
 				if (DB.isConnected(false)
+					&& methodName != null
 					&& !methodName.equals("saveError")
 					&& !methodName.equals("get_Value")
 					&& !methodName.equals("dataSave")
@@ -200,8 +201,8 @@ public class CLogErrorBuffer extends Handler
 					setIssueError(false);
 					try
 					{
-						/*MIssue.create(record); DAP TODO
-						setIssueError(true);*/
+						MIssue.create(record);
+						setIssueError(true);
 					} catch (Throwable e)
 					{
 						//failed to save exception to db, print to console
@@ -212,7 +213,8 @@ public class CLogErrorBuffer extends Handler
 				else
 				{
 					//display to user if database connection not available
-					if (!methodName.equals("saveError")
+					if (methodName != null
+						&& !methodName.equals("saveError")
 						&& !methodName.equals("get_Value")
 						&& !methodName.equals("dataSave")
 						&& loggerName.indexOf("Issue") == -1
@@ -254,14 +256,14 @@ public class CLogErrorBuffer extends Handler
 	public Vector<String> getColumnNames(Properties ctx)
 	{
 		Vector<String> cn = new Vector<String>();
-		cn.add("DateTime");
-		cn.add("Level");
+		cn.add(Msg.getMsg(ctx, "DateTime"));
+		cn.add(Msg.getMsg(ctx, "Level"));
 		//
-		cn.add("Class.Method");
-		cn.add("Message");
+		cn.add(Msg.getMsg(ctx, "Class.Method"));
+		cn.add(Msg.getMsg(ctx, "Message"));
 		//2
-		cn.add("Parameter");
-		cn.add("Trace");
+		cn.add(Msg.getMsg(ctx, "Parameter"));
+		cn.add(Msg.getMsg(ctx, "Trace"));
 		//
 		return cn;
 	}	//	getColumnNames
@@ -462,4 +464,14 @@ public class CLogErrorBuffer extends Handler
 		return null;
 	}
 
+	private static class Msg {
+		private static String getMsg( Object ctx, String msg ) {
+			return msg;
+		}
+	}
+
+	private static class MIssue {
+		private static void create(LogRecord record) {
+		}
+	}
 }	//	CLogErrorBuffer
