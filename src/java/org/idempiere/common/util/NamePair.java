@@ -16,6 +16,8 @@
  *****************************************************************************/
 package org.idempiere.common.util;
 
+import software.hsharp.core.models.INameIdPair;
+
 import java.io.Serializable;
 import java.text.Collator;
 import java.util.Comparator;
@@ -26,7 +28,7 @@ import java.util.Comparator;
  *  @author     Jorg Janke
  *  @version    $Id: NamePair.java,v 1.3 2006/07/30 00:52:23 jjanke Exp $
  */
-public abstract class NamePair implements Comparator<Object>, Serializable, Comparable<Object>
+public abstract class NamePair implements Comparator<Object>, Serializable, Comparable<Object>, INameIdPair
 {
 	/**
 	 * 

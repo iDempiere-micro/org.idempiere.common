@@ -16,13 +16,15 @@
  *****************************************************************************/
 package org.idempiere.common.util;
 
+import software.hsharp.core.models.INameKeyPair;
+
 /**
  *	(Numeric) Key Name Pair
  *
  *  @author     Jorg Janke
  *  @version    $Id: KeyNamePair.java,v 1.2 2006/07/30 00:52:23 jjanke Exp $
  */
-public final class KeyNamePair extends NamePair
+public final class KeyNamePair extends NamePair implements INameKeyPair
 {
 	/**
 	 * 

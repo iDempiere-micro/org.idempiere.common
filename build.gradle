@@ -3,5 +3,7 @@ dependencies {
     compile group: 'org.osgi', name: 'org.osgi.util.tracker', version: '1.5.1'    
 
     compile project(':org.idempiere.icommon')
-    compile files('../org.idempiere.icommon/bin')    
+    compile files('../org.idempiere.icommon/bin')
+    compile project(':software.hsharp.core.models')
+    compile files('../software.hsharp.core.models/bin')
 }
