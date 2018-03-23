@@ -140,8 +140,10 @@
     <orderEntry type="library" scope="TEST" name="Gradle: org.javassist:javassist:3.20.0-GA" level="project"/>
     <orderEntry type="library" scope="TEST" name="Gradle: javax.inject:javax.inject:1" level="project"/>
     <orderEntry type="library" scope="TEST" name="Gradle: org.jetbrains:annotations:13.0" level="project"/>
+    <orderEntry level="project" name="scala-sdk-2.12.3" type="library"/>
     <orderEntry module-name="org.idempiere.icommon" type="module" scope="PROVIDED"/>
     <orderEntry module-name="software.hsharp.api.icommon" type="module" scope="PROVIDED"/>
+    <orderEntry module-name="software.hsharp.core.models" type="module" scope="PROVIDED"/>
     <orderEntry type="module-library" scope="PROVIDED">
       <library>
         <CLASSES>
@@ -595,6 +597,15 @@
       <library>
         <CLASSES>
           <root url="file:///home/david/dev/ERP/subprojects/org.idempiere.icommon/bin"/>
+        </CLASSES>
+        <JAVADOC/>
+        <SOURCES/>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" scope="PROVIDED">
+      <library>
+        <CLASSES>
+          <root url="file:///home/david/dev/ERP/subprojects/software.hsharp.core.models/bin"/>
         </CLASSES>
         <JAVADOC/>
         <SOURCES/>
@@ -602,6 +613,7 @@
     </orderEntry>
     <orderEntry module-name="org.idempiere.icommon" type="module" scope="RUNTIME"/>
     <orderEntry module-name="software.hsharp.api.icommon" type="module" scope="RUNTIME"/>
+    <orderEntry module-name="software.hsharp.core.models" type="module" scope="RUNTIME"/>
     <orderEntry type="module-library" scope="RUNTIME">
       <library>
         <CLASSES>
@@ -1060,8 +1072,18 @@
         <SOURCES/>
       </library>
     </orderEntry>
+    <orderEntry type="module-library" scope="RUNTIME">
+      <library>
+        <CLASSES>
+          <root url="file:///home/david/dev/ERP/subprojects/software.hsharp.core.models/bin"/>
+        </CLASSES>
+        <JAVADOC/>
+        <SOURCES/>
+      </library>
+    </orderEntry>
     <orderEntry module-name="org.idempiere.icommon" type="module" scope="TEST"/>
     <orderEntry module-name="software.hsharp.api.icommon" type="module" scope="TEST"/>
+    <orderEntry module-name="software.hsharp.core.models" type="module" scope="TEST"/>
     <orderEntry type="module-library" scope="TEST">
       <library>
         <CLASSES>
@@ -1619,6 +1641,14 @@
         <SOURCES/>
       </library>
     </orderEntry>
-    <orderEntry level="project" name="scala-sdk-2.12.3" type="library"/>
+    <orderEntry type="module-library" scope="TEST">
+      <library>
+        <CLASSES>
+          <root url="file:///home/david/dev/ERP/subprojects/software.hsharp.core.models/bin"/>
+        </CLASSES>
+        <JAVADOC/>
+        <SOURCES/>
+      </library>
+    </orderEntry>
   </component>
 </module>
