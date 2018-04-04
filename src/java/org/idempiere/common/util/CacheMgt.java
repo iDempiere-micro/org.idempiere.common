@@ -103,9 +103,13 @@ public class CacheMgt
 		Map<K, V> map = null;
 		if (distributed) 
 		{
-			ICacheService provider = Service.locator().locate(ICacheService.class).getService();
-			if (provider != null)
-				map = provider.getMap(name);
+			try {
+				ICacheService provider = Service.locator().locate(ICacheService.class).getService();
+				if (provider != null)
+					map = provider.getMap(name);
+			} catch( Exception ex ) {
+				ex.printStackTrace();
+			}
 		}
 		
 		if (map == null)

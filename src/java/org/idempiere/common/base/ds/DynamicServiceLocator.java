@@ -18,10 +18,14 @@ import org.idempiere.common.base.IServiceHolder;
 import org.idempiere.common.base.IServiceLocator;
 import org.idempiere.common.base.IServicesHolder;
 import org.idempiere.common.base.ServiceQuery;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.service.component.ComponentConstants;
 import org.osgi.util.tracker.ServiceTracker;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author hengsin
@@ -41,6 +45,7 @@ public class DynamicServiceLocator implements IServiceLocator {
 	@Override
 	public <T> IServiceHolder<T> locate(Class<T> type) {
 		Filter filter = filter(type, null, null);
+		if ( filter == null ) { return new DummyDynamicServiceHolder(); }
 		ServiceTracker<T, T> tracker = BaseActivator.getServiceTracker(type, filter);
 		return new DynamicServiceHolder<T>(tracker);
 	}
@@ -72,12 +77,29 @@ public class DynamicServiceLocator implements IServiceLocator {
 		return new DynamicServiceHolder<T>(tracker);
 	}
 
+	public class DummyDynamicServiceHolder<T> extends DynamicServiceHolder<T> {
+        public DummyDynamicServiceHolder() {
+            super(null);
+        }
+
+        @Override
+        public T getService() {
+            return null;
+        }
+
+        @Override
+        public List<T> getServices() {
+            return new ArrayList<T>();
+        }
+    }
+
 	/**
 	 * @see org.idempiere.common.base.IServiceLocator#list(java.lang.Class)
 	 */
 	@Override
 	public <T> IServicesHolder<T> list(Class<T> type) {
 		Filter filter = filter(type, null, null);
+		if ( filter == null ) { return new DummyDynamicServiceHolder(); }
 		ServiceTracker<T, T> tracker = BaseActivator.getServiceTracker(type, filter);
 		
 		return new DynamicServiceHolder<T>(tracker);
@@ -92,6 +114,7 @@ public class DynamicServiceLocator implements IServiceLocator {
 			return list(type);
 		
 		Filter filter = filter(type, null, query);
+        if ( filter == null ) { return new DummyDynamicServiceHolder(); }
 		ServiceTracker<T, T> tracker = BaseActivator.getServiceTracker(type, filter);
 		return new DynamicServiceHolder<T>(tracker);
 	}
@@ -123,8 +146,13 @@ public class DynamicServiceLocator implements IServiceLocator {
 		}
 		builder.append(")");
 		try {
-			Filter result = BaseActivator.getBundleContext().createFilter(builder.toString());
-			return result;
+			BundleContext bundleContext = BaseActivator.getBundleContext();
+			if ( bundleContext== null ) {
+				return null;
+			} else {
+				Filter result = bundleContext.createFilter(builder.toString());
+				return result;
+			}
 		} catch (InvalidSyntaxException e) {
 			e.printStackTrace();
 			return null;

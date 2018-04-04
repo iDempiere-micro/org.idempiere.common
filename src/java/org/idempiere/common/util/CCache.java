@@ -111,9 +111,13 @@ public class CCache<K,V> implements CacheInterface, Map<K, V>, Serializable
 		cache = CacheMgt.get().register(this, distributed);
 		m_distributed = distributed;
 		if (distributed) {
-			ICacheService provider = Service.locator().locate(ICacheService.class).getService();
-			if (provider != null) {
-				nullList = provider.getSet(name);
+			try {
+				ICacheService provider = Service.locator().locate(ICacheService.class).getService();
+				if (provider != null) {
+					nullList = provider.getSet(name);
+				}
+			} catch ( Exception ex ) {
+				ex.printStackTrace();
 			}
 		} 
 		
