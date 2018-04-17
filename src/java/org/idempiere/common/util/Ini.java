@@ -16,6 +16,8 @@
  *****************************************************************************/
 package org.idempiere.common.util;
 
+import kotlin.Unit;
+
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
@@ -47,9 +49,9 @@ import java.util.logging.Level;
  *
  * @author Teo Sarca, www.arhipac.ro
  * 			<li>FR [ 1658127 ] Select charset encoding on import
- * 			<li>FR [ 2406123 ] Ini.getIni().saveProperties fails if target directory does not exist
+ * 			<li>FR [ 2406123 ] Ini.getIni().saveProperties- fails if target directory does not exist
  */
-public class Ini implements Serializable
+public class Ini extends software.hsharp.core.util.Ini implements Serializable 
 {
 	/**
 	 * 
@@ -59,8 +61,8 @@ public class Ini implements Serializable
 	/**	Logger			*/
 	private  CLogger log = CLogger.getCLogger(Ini.class);
 
-	public String getBasePropertyFileName() {
-		return "idempiere.properties";
+	public static String getBasePropertyFileName() {
+		return "idempiere";
 	}
 
 	/** Apps User ID		*/
@@ -217,84 +219,6 @@ public class Ini implements Serializable
 		DEFAULT_CHARSET, DEFAULT_LOAD_TAB_META_DATA_BG
 	};
 
-	/**	Container for Properties    */
-	private volatile  Properties 		s_prop = new Properties();
-
-	private  String s_propertyFileName = null;
-
-	/**
-	 *	Save INI parameters to disk
-	 *  @param tryUserHome get user home first
-	 */
-	public  void saveProperties (boolean tryUserHome)
-	{
-		if (Ini.getIni().isClient() && DB.isConnected()) {
-			// Call ModelValidators beforeSaveProperties
-			//ModelValidationEngine.get().beforeSaveProperties(); DAP TODO - we do not support isClient anyway
-		}
-
-		if (isWebStartClient())
-		{
-			saveWebStartProperties();
-		}
-		else
-		{
-			String fileName = getFileName (tryUserHome);
-			FileOutputStream fos = null;
-			try
-			{
-				File f = new File(fileName);
-				f.getAbsoluteFile().getParentFile().mkdirs(); // Create all dirs if not exist - teo_sarca FR [ 2406123 ]
-				fos = new FileOutputStream(f);
-				s_prop.store(fos, "Adempiere");
-				fos.flush();
-				fos.close();
-			}
-			catch (Exception e)
-			{
-				log.log(Level.SEVERE, "Cannot save Properties to " + fileName + " - " + e.toString());
-				return;
-			}
-			catch (Throwable t)
-			{
-				log.log(Level.SEVERE, "Cannot save Properties to " + fileName + " - " + t.toString());
-				return;
-			}
-			if (log.isLoggable(Level.FINER)) log.finer(fileName);
-		}
-	}	//	save
-
-	/**
-	 *	Load INI parameters from disk
-	 *  @param reload reload
-	 */
-	public  void loadProperties (boolean reload)
-	{
-		if (reload || s_prop.size() == 0)
-		{
-			if (isWebStartClient())
-			{
-				loadWebStartProperties();
-			}
-			else
-			{
-				loadProperties(getFileName(s_client));
-			}
-		}
-	}	//	loadProperties
-
-	private  boolean loadWebStartProperties() {
-		boolean loadOK = true;
-		boolean firstTime = false;
-		s_prop = new Properties();
-
-		return false;
-	}
-
-	private  void saveWebStartProperties() {
-
-	}
-
 	/**
 	 * 	Get JNLP CodeBase
 	 *	@return code base or null
@@ -312,56 +236,11 @@ public class Ini implements Serializable
 		return getCodeBase() != null;
 	}
 
-	/**
-	 *  Load INI parameters from filename.
-	 *  Logger is on default level (INFO)
-	 *	@param filename to load
-	 *	@return true if first time
-	 */
-	public  boolean loadProperties (String filename)
-	{
-		boolean loadOK = true;
-		boolean firstTime = false;
-		s_prop = new Properties();
-		FileInputStream fis = null;
-		try
-		{
-			fis = new FileInputStream(filename);
-			s_prop.load(fis);
-			fis.close();
-		}
-		catch (FileNotFoundException e)
-		{
-			log.warning(filename + " not found");
-			loadOK = false;
-		}
-		catch (Exception e)
-		{
-			log.log(Level.SEVERE, filename + " - " + e.toString());
-			loadOK = false;
-		}
-		catch (Throwable t)
-		{
-			log.log(Level.SEVERE, filename + " - " + t.toString());
-			loadOK = false;
-		}
-		if (!loadOK || s_prop.getProperty(P_TODAY, "").equals(""))
-		{
-			if (log.isLoggable(Level.CONFIG)) log.config(filename);
-			firstTime = true;
-		}
-
-		checkProperties();
-
-		//  Save if not exist or could not be read
-		if (!loadOK || firstTime)
-			saveProperties(true);
-		s_loaded = true;
-		if (log.isLoggable(Level.INFO)) log.info(filename + " #" + s_prop.size());
-		s_propertyFileName = filename;
-
-		return firstTime;
-	}	//	loadProperties
+	@Override
+	protected void initEmptyFile() {
+        checkProperties();
+        save();
+    }
 
 	private  void checkProperties() {
 		//	Check/set properties	defaults
@@ -381,29 +260,6 @@ public class Ini implements Serializable
 	}
 
 	/**
-	 * 	Delete Property file
-	 */
-	public  void deletePropertyFile()
-	{
-		String fileName = getFileName(s_client);
-		File file = new File(fileName);
-		if (file.exists())
-		{
-			try
-			{
-				if (!file.delete())
-					file.deleteOnExit();
-				s_prop = new Properties();
-				if (log.isLoggable(Level.CONFIG)) log.config (fileName);
-			}
-			catch (Exception e)
-			{
-				log.log (Level.WARNING, "Cannot delete Property file", e);
-			}
-		}
-	}	//	deleteProperties
-
-	/**
 	 *	Load property and set to default, if not existing
 	 *
 	 * 	@param key   Key
@@ -416,10 +272,10 @@ public class Ini implements Serializable
 		if (key.equals(P_WARNING) || key.equals(P_WARNING_de))
 			result = defaultValue;
 		else if (!isClient())
-			result = s_prop.getProperty (key, SecureInterface.CLEARVALUE_START + defaultValue + SecureInterface.CLEARVALUE_END);
+			result = getProperties().getProperty (key, SecureInterface.CLEARVALUE_START + defaultValue + SecureInterface.CLEARVALUE_END);
 		else
-			result = s_prop.getProperty (key, SecureEngine.encrypt(defaultValue, 0));
-		s_prop.setProperty (key, result);
+			result = getProperties().getProperty (key, SecureEngine.encrypt(defaultValue, 0));
+        getProperties().setProperty (key, result);
 		return result;
 	}	//	checkProperty
 
@@ -468,23 +324,21 @@ public class Ini implements Serializable
 	public  void setProperty (String key, String value)
 	{
 	//	log.finer(key + "=" + value);
-		if (s_prop == null)
-			s_prop = new Properties();
 		if (key.equals(P_WARNING) || key.equals(P_WARNING_de))
-			s_prop.setProperty(key, value);
+            getProperties().setProperty(key, value);
 		else if (!isClient())
-			s_prop.setProperty(key, SecureInterface.CLEARVALUE_START + value + SecureInterface.CLEARVALUE_END);
+            getProperties().setProperty(key, SecureInterface.CLEARVALUE_START + value + SecureInterface.CLEARVALUE_END);
 		else
 		{
 			if (value == null)
-				s_prop.setProperty(key, "");
+                getProperties().setProperty(key, "");
 			else
 			{
 				String eValue = SecureEngine.encrypt(value, 0);
 				if (eValue == null)
-					s_prop.setProperty(key, "");
+                    getProperties().setProperty(key, "");
 				else
-					s_prop.setProperty(key, eValue);
+                    getProperties().setProperty(key, eValue);
 			}
 		}
 	}	//	setProperty
@@ -518,7 +372,7 @@ public class Ini implements Serializable
 	{
 		if (key == null)
 			return "";
-		String retStr = s_prop.getProperty(key, "");
+		String retStr = getProperties().getProperty(key, "");
 		if (retStr == null || retStr.length() == 0)
 			return "";
 		//
@@ -555,7 +409,7 @@ public class Ini implements Serializable
 	 */
 	public  Properties getProperties()
 	{
-		return s_prop;
+		return getProp();
 	}   //  getProperties
 
 	/**
@@ -565,7 +419,7 @@ public class Ini implements Serializable
 	public  String getAsString()
 	{
 		StringBuilder buf = new StringBuilder ("Ini[");
-		Enumeration<?> e = s_prop.keys();
+		Enumeration<?> e = getProperties().keys();
 		while (e.hasMoreElements())
 		{
 			String key = (String)e.nextElement();
@@ -705,7 +559,7 @@ public class Ini implements Serializable
 	public  Dimension getWindowDimension(int AD_Window_ID)
 	{
 		String key = "WindowDim" + AD_Window_ID;
-		String value = (String)s_prop.get(key);
+		String value = (String)getProperties().get(key);
 		if (value == null || value.length() == 0)
 			return null;
 		int index = value.indexOf('|');
@@ -734,10 +588,10 @@ public class Ini implements Serializable
 		if (windowDimension != null)
 		{
 			String value = windowDimension.width + "|" + windowDimension.height;
-			s_prop.put(key, value);
+			getProperties().put(key, value);
 		}
 		else
-			s_prop.remove(key);
+            getProperties().remove(key);
 	}	//	setWindowDimension
 
 	/**
@@ -748,7 +602,7 @@ public class Ini implements Serializable
 	public  Point getWindowLocation(int AD_Window_ID)
 	{
 		String key = "WindowLoc" + AD_Window_ID;
-		String value = (String)s_prop.get(key);
+		String value = (String)getProperties().get(key);
 		if (value == null || value.length() == 0)
 			return null;
 		int index = value.indexOf('|');
@@ -777,10 +631,10 @@ public class Ini implements Serializable
 		if (windowLocation != null)
 		{
 			String value = windowLocation.x + "|" + windowLocation.y;
-			s_prop.put(key, value);
+            getProperties().put(key, value);
 		}
 		else
-			s_prop.remove(key);
+            getProperties().remove(key);
 	}	//	setWindowLocation
 
 	/**
@@ -790,7 +644,7 @@ public class Ini implements Serializable
 	public  int getDividerLocation()
 	{
 		String key = "Divider";
-		String value = (String)s_prop.get(key);
+		String value = (String)getProperties().get(key);
 		if (value == null || value.length() == 0)
 			return 0;
 		try
@@ -811,7 +665,7 @@ public class Ini implements Serializable
 	{
 		String key = "Divider";
 		String value = String.valueOf(dividerLocation);
-		s_prop.put(key, value);
+        getProperties().put(key, value);
 	}	//	setDividerLocation
 
 	/**
@@ -844,22 +698,28 @@ public class Ini implements Serializable
 
 	public  String getPropertyFileName()
 	{
-		return s_propertyFileName;
+		return getFileName();
 	}
 
-    public static void main(final String[] args) throws Exception{
+  public static void main(final String[] args) throws Exception{
 		System.out.println(Ini.getIni().getAdempiereHome());
 		Ini.getIni().setClient (false);
 	}
 
-    private static Ini instance;
+  private static Ini instance;
     
-    public Ini(){
-		instance = this;
-	}
+  public Ini(){
+      super(getBasePropertyFileName());
+      instance = this;
+  }
 
-    public static Ini getIni(){
-		if (instance==null) new Ini();
+  public static Ini getIni(){
+		if (instance==null) {
+		    instance = (Ini) software.hsharp.core.util.Ini.Companion.load(
+                getBasePropertyFileName(),
+				(String fileName) -> { return new Ini(); }
+            );
+        }
         return instance;
-    }
+  }
 }	//	Ini

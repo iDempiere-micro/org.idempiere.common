@@ -88,7 +88,7 @@ public class CConnection implements Serializable, Cloneable, ICConnection
 					if (cc == null) cc = new CConnection(apps_host);
 					s_cc = cc;
 					Ini.getIni().setProperty(Ini.getIni().P_CONNECTION, cc.toStringLong());
-					Ini.getIni().saveProperties(Ini.getIni().isClient());
+					Ini.getIni().save();
 				}
 			}
 			else
@@ -1122,15 +1122,6 @@ public class CConnection implements Serializable, Cloneable, ICConnection
 			catch (NoClassDefFoundError ee)
 			{
 				System.err.println("Environment Error - Check idempiere.properties - " + ee);
-				if (Ini.getIni().isClient())
-				{
-					if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog
-						(null, "There is a configuration error:\n" + ee
-							+ "\nDo you want to reset the saved configuration?",
-							"Adempiere Configuration Error",
-							JOptionPane.YES_NO_OPTION, JOptionPane.ERROR_MESSAGE))
-						Ini.getIni().deletePropertyFile();
-				}
 				System.exit (1);
 			}
 			catch (Exception e)
