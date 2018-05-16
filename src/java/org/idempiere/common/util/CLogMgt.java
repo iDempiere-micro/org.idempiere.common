@@ -191,8 +191,9 @@ public class CLogMgt
 		setFormatter(CLogFormatter.get());
 		setFilter(CLogFilter.get());
 	
-		mgr.removePropertyChangeListener(listener);
-		mgr.addPropertyChangeListener(listener);
+		// java 9 compatible
+		//mgr.removePropertyChangeListener(listener);
+		//mgr.addPropertyChangeListener(listener);
 	}	//	initialize
 
 
