@@ -97,4 +97,9 @@ public final class KeyNamePair extends NamePair implements INameKeyPair
 		return m_key;
 	}   //  hashCode
 
+	public String toString()
+	{
+		return getID()+":"+super.toString();
+	}	//	toString
+
 }	//	KeyNamePair
