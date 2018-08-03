@@ -72,17 +72,6 @@ public class CConnection implements Serializable, Cloneable, ICConnection
 			{
 				//hengsin, zero setup for webstart client
 				CConnection cc = null;
-				/* DAP TODO webstart client not supported
-				if (apps_host != null && Adempiere.isWebStartClient())
-				{
-					cc = new CConnection(apps_host);
-					if (cc.testAppsServer() == null)
-					{
-						s_cc = cc;
-						Ini.getIni().setProperty(Ini.getIni().P_CONNECTION, cc.toStringLong());
-						Ini.getIni().saveProperties(Ini.getIni().isClient());
-					}
-				}*/
 				if (s_cc == null)
 				{
 					if (cc == null) cc = new CConnection(apps_host);
