@@ -1183,7 +1183,8 @@ public class CConnection implements Serializable, Cloneable, ICConnection
 					conn.setAutoCommit (autoCommit);
 				m_okDB = true;
 			} else {
-				System.out.println( "conn == null!!" );
+				System.out.println( "Unable to obtain connection. We will try to restart." );
+				m_db.fubar();
 			}
 		}
 		catch (UnsatisfiedLinkError ule)
